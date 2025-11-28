@@ -863,7 +863,7 @@ html {
 .arrows{
     position: absolute;
     top: 30%;
-    right: 50px;
+    right: 350px;
     z-index: 100;
 }
 .arrows button{
@@ -883,13 +883,15 @@ html {
 }
 .thumbnail{
     position: absolute;
-    bottom: 50px;
+    bottom: 10px;
+    left: auto;
+    right: 150px;
     z-index: 11;
     display: flex;
-    gap: 10px;
-    width: 100%;
+    gap: 8px;
+    width: auto;
     height: 250px;
-    padding: 0 50px;
+    padding: 0 20px;
     box-sizing: border-box;
     overflow: auto;
     justify-content: center;

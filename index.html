@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="chatbot.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -74,7 +75,7 @@
                         I love to learn; I like questioning the fundamentals, and I'm a bit stubborn about accepting things the way they are. Imagination is fundamental to my learning. And solving problems from its first principles is my innate approach.
                     </p>
                     <p>
-                        As a current graduate student in Artificial Intelligence at Boston University, I am fortunate enough to explore and dive into my interests in AI & Mathematics. I believe most complex things are pretty simple if you create a story out of them. Like most Mathematical equations, they may look complex at first, but adding a story to them would reveal themselves as an intuitive consequence of logic and common sense.
+                        As a current graduate student in Artificial Intelligence at Boston University, I am fortunate enough to explore and dive into my interests in AI & Mathematics. I believe most complex things are pretty simple if you create a story out of them. Like most Mathematical equations that look complicated on first glance, usually emerge naturally from simple logic and common sense. 
                     </p>
                     <p>
                         I am fast, agile & obssesed. I take ownership and deliver, even when tasks go beyond my current skillset.
@@ -112,16 +113,31 @@
         <div class="slider">
             <!-- list Items -->
             <div class="list">
-                
                 <div class="item active">
                     <img src="image/bu.jpg">
                     <div class="content">
                         <!-- <p>design</p> -->
                         <h3 style="font-size:3rem;">Boston University</h3>
                         <h4>Aug 2024 - Present</h4>
-                        <p>
+                        <p style="margin-top: 10px;">
                             Currently a 3rd semester Master's in Artificial Intelligence student at Boston University, where I also serve as a Teaching Assistant for the graduate-level course CS523: Deep Learning.
                         </p>
+                    </div>
+                </div>
+                <div class="item">
+                    <img src="image/dl.jpg">
+                    <div class="content" style="max-width: 600px; text-align: left;">
+                        <h3 style="font-size:3rem; display: inline;">Deep Learning - TA</h3>
+                        <h4>Sept 2025 - Present</h4>
+                        <p style="margin-bottom: 10px; margin-top: 10px;">
+                            CS523 - Deep Learning is designed to be a mathematically rigorous exploration of Deep Learning. As a Graduate Teaching Assistant:
+                            <ul style="margin-left: 18px; margin-bottom: 0;">
+                                <li>Conducted 6 hours of weekly office hours, providing not only doubt resolution but also supplementary teaching on essential Mathematical prerequisites such as linear algebra, matrix calculus, and Prob/Stats.</li>
+                                <li>Guided students through conceptual understanding and mathematical derivations of key topics such as backpropagation for feedforward, convolution and recurrent neural networks, transformers, principal component analysis (PCA), autoencoders, diffusion models, and Reinforcement Learning, explaining each both mathematically and intuitively.</li>
+                                <li>Curated and structured course content, including assignments and midterms.</li>
+                            </ul>
+                        </p>
+                        
                     </div>
                 </div>
                 <div class="item">
@@ -130,7 +146,7 @@
                         <!-- <p>design</p> -->
                         <h3 style="font-size:3rem;">Barclays</h3>
                         <h4>Aug 2020 - July 2024</h4>
-                        <p>
+                        <p style="margin-top: 10px;">
                             Worked at Barclays as a Senior Software Developer for 4 years. I was involved in designing and developing microservices for various banking applications, ensuring high performance and scalability.
                         </p>
                     </div>
@@ -141,7 +157,7 @@
                         <!-- <p>design</p> -->
                         <h3 style="font-size:3rem;">IIT Kharagpur</h3>
                         <h4>Aug 2015 - Jun 2020</h4>
-                        <p>
+                        <p style="margin-top: 10px;">
                             Completed my undergrad from IIT Kharagpur in Industrial Electronics. During my time at IIT, I was actively involved in various technical clubs and projects, which helped me develop a strong foundation in engineering principles.
                         </p>
                     </div>
@@ -180,6 +196,12 @@
                     <img src="image/bu.jpg">
                     <div class="content" style="color: white;">
                         Boston University
+                    </div>
+                </div>
+                <div class="item">
+                    <img src="image/dl.jpg">
+                    <div class="content" style="color: white;">
+                        Deep Learning - TA
                     </div>
                 </div>
                 <div class="item">
@@ -517,8 +539,33 @@
     </section>
 
 
+    <!-- Chatbot -->
+    <div class="chat-widget">
+        <button class="chat-button" id="chatButton">
+            <i class="fas fa-comments"></i>
+        </button>
+        <div class="chat-popup" id="chatPopup">
+            <div class="chat-header">
+                <h3>Chat with me</h3>
+                <button class="close-chat" id="closeChat">&times;</button>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot">
+                    Hi! I am Aditya Bhandari. How can I help you today?
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="messageInput" placeholder="Type your message...">
+                <button id="sendMessage">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="chatbot.js"></script>
     <script src="script.js"></script>
     <script src="slider.js"></script>
-
+    
 </body>
 </html>
