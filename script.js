@@ -373,4 +373,137 @@ activeLinkStyles.textContent = `
     }
 `;
 
-document.head.appendChild(activeLinkStyles); 
+document.head.appendChild(activeLinkStyles);
+
+// --- Visit tracking (UTM + IP / location) → Google Sheet via Apps Script ---
+// Paste your Web app URL from visit-tracker.gs deployment (see that file for setup).
+const VISIT_TRACKING_ENDPOINT = 'https://script.google.com/macros/s/AKfycbzF91G4i8BOC6cKhKXBHga8TkJdE6gcZxZAEvtoZmqwo1pNivoZpgCtkJsD5tR8my41/exec';
+const VISIT_TRACKED_KEY = 'site_visit_tracked';
+const UTM_STORAGE_KEY = 'site_utm_params';
+
+function getUtmParams() {
+    const params = new URLSearchParams(window.location.search);
+    const fromUrl = {
+        utm_source: params.get('utm_source') || '',
+        utm_medium: params.get('utm_medium') || '',
+        utm_content: params.get('utm_content') || ''
+    };
+
+    const hasUrlUtms = Object.values(fromUrl).some(Boolean);
+    if (hasUrlUtms) {
+        sessionStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(fromUrl));
+        return fromUrl;
+    }
+
+    try {
+        const stored = sessionStorage.getItem(UTM_STORAGE_KEY);
+        if (stored) return JSON.parse(stored);
+    } catch (_) {
+        // ignore bad session data
+    }
+
+    return fromUrl;
+}
+
+async function getIpAndLocation() {
+    try {
+        const response = await fetch('https://ipapi.co/json/', { cache: 'no-store' });
+        if (!response.ok) throw new Error('ipapi failed');
+        const data = await response.json();
+        if (data.error) throw new Error(data.reason || 'ipapi error');
+        return {
+            ip: data.ip || '',
+            city: data.city || '',
+            region: data.region || '',
+            country: data.country_name || data.country || '',
+            latitude: data.latitude ?? '',
+            longitude: data.longitude ?? ''
+        };
+    } catch (_) {
+        try {
+            const response = await fetch('https://get.geojs.io/v1/ip/geo.json', { cache: 'no-store' });
+            if (!response.ok) throw new Error('geojs failed');
+            const data = await response.json();
+            return {
+                ip: data.ip || '',
+                city: data.city || '',
+                region: data.region || '',
+                country: data.country || '',
+                latitude: data.latitude || '',
+                longitude: data.longitude || ''
+            };
+        } catch (error) {
+            console.warn('Could not resolve visitor IP/location:', error);
+            return {
+                ip: '',
+                city: '',
+                region: '',
+                country: '',
+                latitude: '',
+                longitude: ''
+            };
+        }
+    }
+}
+
+function attachUtmFieldsToContactForm(utm) {
+    const form = document.querySelector('form[action*="formspree.io"]');
+    if (!form) return;
+
+    Object.entries(utm).forEach(([name, value]) => {
+        let input = form.querySelector(`input[name="${name}"]`);
+        if (!input) {
+            input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = name;
+            form.appendChild(input);
+        }
+        input.value = value || '';
+    });
+}
+
+async function trackSiteVisit() {
+    if (sessionStorage.getItem(VISIT_TRACKED_KEY)) return;
+
+    const utm = getUtmParams();
+    attachUtmFieldsToContactForm(utm);
+
+    if (!VISIT_TRACKING_ENDPOINT) {
+        console.warn('Visit tracking skipped: set VISIT_TRACKING_ENDPOINT in script.js');
+        return;
+    }
+
+    const location = await getIpAndLocation();
+    const payload = {
+        utm_source: utm.utm_source,
+        utm_medium: utm.utm_medium,
+        utm_content: utm.utm_content,
+        ip: location.ip,
+        city: location.city,
+        region: location.region,
+        country: location.country,
+        latitude: location.latitude,
+        longitude: location.longitude,
+        page_url: window.location.href,
+        referrer: document.referrer || '',
+        user_agent: navigator.userAgent,
+        visited_at: new Date().toISOString()
+    };
+
+    try {
+        // text/plain avoids a CORS preflight; Apps Script still receives the JSON body.
+        await fetch(VISIT_TRACKING_ENDPOINT, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload)
+        });
+        sessionStorage.setItem(VISIT_TRACKED_KEY, '1');
+    } catch (error) {
+        console.warn('Visit tracking failed:', error);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    trackSiteVisit();
+}); 
